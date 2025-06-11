@@ -1,0 +1,17 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Name=Start_Link-Daily
+Comment=Feature based Parametric Modeler
+Comment[de_DE]=Feature-basierter parametrischer Modellierer
+GenericName=CAD Application
+GenericName[de_DE]=CAD-Anwendung
+Exec=bash -c "cd \"$(dirname "\"%k\"")\"; bash "./Start_Link-Daily.sh
+Terminal=false
+Type=Application
+Icon=FreeCad.png
+Categories=Graphics;Science;Engineering;
+StartupNotify=true
+MimeType=application/x-extension-fcstd;
+

@@ -1,0 +1,68 @@
+name: Build PrusaSlicer AppImage
+on:
+  workflow_dispatch:
+  push:
+  schedule:
+    - cron: '0 1 * * *' # every Day at 01:00
+permissions:
+  actions: write
+  contents: write
+defaults:
+  run:
+    shell: bash
+env:
+  GH_TOKEN: ${{ github.token }}
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    #timeout-minutes: 180
+    steps:
+    - name: Check Releases and Skip Rest of Job if no new release
+      id: Check_Releases
+      run: |
+        set -x
+        set -v
+        GetReleases()
+         {
+          list=$(gh release list -R "$1" --json tagName | jq -r 'map(select(true))[] | (.tagName)')
+          tmpfile=mktemp
+          touch $tmpfile
+          for i in $list; do
+            if [[ $i == *stable ]] && dpkg --compare-versions $i "ge" "20241003stable"; then
+              echo $i >>$tmpfile
+            fi
+          done
+          sort <$tmpfile >$2
+          rm -f $tmpfile
+         }
+        
+        GetReleases "realthunder/FreeCAD" "./Link.Releases"
+        GetReleases "$GITHUB_REPOSITORY" "./This.Releases"
+        VERSION=$(head -1 <<< "$(comm -23 Link.Releases This.Releases)")
+        rm -f "./Link.Releases" "./This.Releases"
+        
+        if [ -z "${VERSION}" ]; then
+          echo "No new release found. Skipping rest of workflow."
+          echo "skip=true" >> $GITHUB_OUTPUT
+         else
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "VERSION=version_${VERSION}" >> $GITHUB_OUTPUT
+          echo "New release found: ${VERSION}"
+          echo "skip=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Clone this repository
+      if: steps.Check_Releases.outputs.skip == 'false'
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Get FreeCAD AppImage
+      if: steps.Check_Releases.outputs.skip == 'false'
+      run: |
+        
+        URL=https://github.com/realthunder/FreeCAD/releases/download/${VERSION}/FreeCAD-Link-Stable-Linux-x86_64-py3.11-
+        #wget https://github.com/realthunder/FreeCAD/releases
+        #https://github.com/realthunder/FreeCAD/releases/download/20241003stable/FreeCAD-Link-Stable-Linux-x86_64-py3.11-20241003.AppImage
+        #https://github.com/realthunder/FreeCAD/releases/download/20240322stable/FreeCAD-Link-Stable-Linux-x86_64-py3.11-20240322.AppImage
+
