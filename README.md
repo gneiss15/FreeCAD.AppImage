@@ -12,6 +12,7 @@ Whenever realthunder publish a new release of his version of FreeCAD (see: [here
   (EXE_SEARCH is "FreeCAD-Link-" for Link/realthunder and "FreeCAD-Orig-" for Original FreeCAD)
 - On the system that is used for the AppImage, meld should be installed (or Change the var MELD inside _Start.sh)
 - By modifing the Config settings inside _Start.sh You may change the behaviour of the script.
+- The file OpenSCADAppimageStart.sh may be used to start OpenSCAD from within FreeCAD (the OpenSCAD AppImage must be in the same Dir)
 ### Background
 The Original AppImages (both from FreeCAD and Link/realthunder) didn't well when used on a portable (PenDrive).\
 I wrote a wrapper script that makes them fully portable (all data is stored on the PenDrive).\

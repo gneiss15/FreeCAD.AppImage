@@ -20,6 +20,7 @@ jobs:
     - name: Setup Env
       run: |
         #set -x
+        #set -v
         LINK_REPO="realthunder/FreeCAD"
         THIS_REPO_DIR=${GITHUB_WORKSPACE}
         TOOLS_DIR=${THIS_REPO_DIR}/.github/tools
@@ -72,19 +73,21 @@ jobs:
     - name: Get FreeCAD AppImage
       if: steps.Check_Releases.outputs.skip == 'false'
       run: |
+        #set -x
+        #set -v
+        
         VERSION_NR=${VERSION%%stable}
         IN_FILE=FreeCAD-Link-Stable-Linux-x86_64-py3.11-${VERSION_NR}.AppImage
         OUT_FILE=FreeCAD-Link-Stable-GN-${VERSION_NR}.AppImage
         
         wget -q https://github.com/realthunder/FreeCAD/releases/download/${VERSION}/${IN_FILE}
-        set -x
-        set -v
         chmod a+x ${IN_FILE}
         ./${IN_FILE} --appimage-extract >/dev/null
         cp ${TOOLS_DIR}/AppRun.Link squashfs-root/AppRun
         rm -f squashfs-root/usr/share/metainfo/org.freecadweb.FreeCAD.Link.appdata.xml
         ARCH=x86_64 ${APPIMAGETOOL} squashfs-root/ ${OUT_FILE} >/dev/null
         rm ${IN_FILE}
+        rm -rf squashfs-root
         
         # Upload to GitHub Releases
         list=$(gh release list -R "$1" --json tagName | jq -r 'map(select(true))[] | (.tagName)');
@@ -94,7 +97,4 @@ jobs:
           fi
         done
         gh release create $VERSION *.AppImage* --title "$VERSION"
-        
-        #https://github.com/realthunder/FreeCAD/releases/download/20241003stable/FreeCAD-Link-Stable-Linux-x86_64-py3.11-20241003.AppImage
-        #https://github.com/realthunder/FreeCAD/releases/download/20240322stable/FreeCAD-Link-Stable-Linux-x86_64-py3.11-20240322.AppImage
 
