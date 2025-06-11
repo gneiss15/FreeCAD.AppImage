@@ -79,7 +79,7 @@ jobs:
         
         wget https://github.com/realthunder/FreeCAD/releases/download/${VERSION}/${IN_FILE}
         chmod a-x ${IN_FILE}
-        ${IN_FILE} --appimage-extract
+        ./${IN_FILE} --appimage-extract
         cp ${TOOLS_DIR}/AppRun.Link squashfs-root/AppRun
         rm squashfs-root/usr/share/metainfo/org.freecadweb.FreeCAD.Link.appdata.xml
         ARCH=x86_64 ${APPIMAGETOOL} squashfs-root/ ${OUT_FILE}
