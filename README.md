@@ -1,0 +1,1 @@
+# FreeCAD.Link.AppImage
