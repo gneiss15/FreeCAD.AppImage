@@ -71,14 +71,14 @@ jobs:
     - name: Get FreeCAD AppImage
       if: steps.Check_Releases.outputs.skip == 'false'
       run: |
-        set -x
-        set -v
         VERSION_NR=${VERSION%%stable}
         IN_FILE=FreeCAD-Link-Stable-Linux-x86_64-py3.11-${VERSION_NR}.AppImage
         OUT_FILE=FreeCAD-Link-Stable-GN-${VERSION_NR}.AppImage
         
         wget https://github.com/realthunder/FreeCAD/releases/download/${VERSION}/${IN_FILE}
-        chmod a-x ${IN_FILE}
+        set -x
+        set -v
+        chmod a+x ${IN_FILE}
         ./${IN_FILE} --appimage-extract
         cp ${TOOLS_DIR}/AppRun.Link squashfs-root/AppRun
         rm squashfs-root/usr/share/metainfo/org.freecadweb.FreeCAD.Link.appdata.xml
