@@ -21,10 +21,11 @@ jobs:
       run: |
         #set -x
         LINK_REPO="realthunder/FreeCAD"
+        THIS_REPO_DIR=${GITHUB_WORKSPACE}/${GITHUB_REPOSITORY##*/}
         TOOLS_DIR=${THIS_REPO_DIR}/.github/tools
         APPIMAGETOOL="${TOOLS_DIR}/appimagetool-x86_64.AppImage"
 
-        for i in LINK_REPO TOOLS_DIR APPIMAGETOOL; do
+        for i in LINK_REPO THIS_REPO_DIR TOOLS_DIR APPIMAGETOOL; do
           eval "r=\"\$$i\""
           echo "$i=$r" >> $GITHUB_ENV
         done
@@ -75,14 +76,14 @@ jobs:
         IN_FILE=FreeCAD-Link-Stable-Linux-x86_64-py3.11-${VERSION_NR}.AppImage
         OUT_FILE=FreeCAD-Link-Stable-GN-${VERSION_NR}.AppImage
         
-        wget https://github.com/realthunder/FreeCAD/releases/download/${VERSION}/${IN_FILE}
+        wget -q https://github.com/realthunder/FreeCAD/releases/download/${VERSION}/${IN_FILE}
         set -x
         set -v
         chmod a+x ${IN_FILE}
-        ./${IN_FILE} --appimage-extract
+        ./${IN_FILE} --appimage-extract >/dev/null
         cp ${TOOLS_DIR}/AppRun.Link squashfs-root/AppRun
-        rm squashfs-root/usr/share/metainfo/org.freecadweb.FreeCAD.Link.appdata.xml
-        ARCH=x86_64 ${APPIMAGETOOL} squashfs-root/ ${OUT_FILE}
+        rm -f squashfs-root/usr/share/metainfo/org.freecadweb.FreeCAD.Link.appdata.xml
+        ARCH=x86_64 ${APPIMAGETOOL} squashfs-root/ ${OUT_FILE} >/dev/null
         rm ${IN_FILE}
         
         # Upload to GitHub Releases
@@ -92,7 +93,7 @@ jobs:
             gh release delete $VERSION -y
           fi
         done
-        gh release create $VERSION *.AppImage* --title "$VERSION"        
+        gh release create $VERSION *.AppImage* --title "$VERSION"
         
         #https://github.com/realthunder/FreeCAD/releases/download/20241003stable/FreeCAD-Link-Stable-Linux-x86_64-py3.11-20241003.AppImage
         #https://github.com/realthunder/FreeCAD/releases/download/20240322stable/FreeCAD-Link-Stable-Linux-x86_64-py3.11-20240322.AppImage
