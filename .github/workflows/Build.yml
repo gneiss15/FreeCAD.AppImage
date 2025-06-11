@@ -21,7 +21,7 @@ jobs:
       run: |
         #set -x
         LINK_REPO="realthunder/FreeCAD"
-        THIS_REPO_DIR=${GITHUB_WORKSPACE}/${GITHUB_REPOSITORY##*/}
+        THIS_REPO_DIR=${GITHUB_WORKSPACE}
         TOOLS_DIR=${THIS_REPO_DIR}/.github/tools
         APPIMAGETOOL="${TOOLS_DIR}/appimagetool-x86_64.AppImage"
 
