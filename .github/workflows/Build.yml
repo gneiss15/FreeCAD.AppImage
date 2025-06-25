@@ -1,4 +1,4 @@
-name: Build PrusaSlicer AppImage
+name: Build FreeCAD AppImage
 on:
   workflow_dispatch:
   push:
