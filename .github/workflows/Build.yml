@@ -21,7 +21,7 @@ jobs:
       run: |
         #set -x
         #set -v
-        LINK_REPO="realthunder/FreeCAD"
+        ORIG_REPO="FreeCAD/FreeCAD"
         THIS_REPO_DIR=${GITHUB_WORKSPACE}
         TOOLS_DIR=${THIS_REPO_DIR}/.github/tools
         APPIMAGETOOL="${TOOLS_DIR}/appimagetool-x86_64.AppImage"
@@ -38,22 +38,29 @@ jobs:
         #set -v
         GetReleases()
          {
-          list=$(gh release list -R "$1" --json tagName | jq -r 'map(select(true))[] | (.tagName)')
+          # gh release list:
+          # createdAt, isDraft, isLatest, isPrerelease, name, publishedAt, tagName
+          list=$(gh release list -R "$1" --json tagName | jq -r 'reverse | map(select(true))[] | (.tagName)')
           tmpfile=mktemp
           touch $tmpfile
+          WRITE_IT=0
           for i in $list; do
-            if [[ $i == *stable ]] && dpkg --compare-versions $i "ge" "20241003stable"; then
+            #echo $i
+            if [ $WRITE_IT -eq 0 ] && [ "$i" = "1.0.1" ]; then
+              WRITE_IT=1
+            fi
+            if [ $WRITE_IT -eq 1 ]; then
               echo $i >>$tmpfile
             fi
           done
           sort <$tmpfile >$2
           rm -f $tmpfile
          }
-        
-        GetReleases "$LINK_REPO" "./Link.Releases"
+       
+        GetReleases "$ORIG_REPO" "./Orig.Releases"
         GetReleases "$GITHUB_REPOSITORY" "./This.Releases"
-        VERSION=$(head -1 <<< "$(comm -23 Link.Releases This.Releases)")
-        rm -f "./Link.Releases" "./This.Releases"
+        VERSION=$(head -1 <<< "$(comm -23 Orig.Releases This.Releases)")
+        rm -f "./Orig.Releases" "./This.Releases"
         
         if [ -z "${VERSION}" ]; then
           echo "No new release found. Skipping rest of workflow."
@@ -76,15 +83,19 @@ jobs:
         #set -x
         #set -v
         
-        VERSION_NR=${VERSION%%stable}
-        IN_FILE=FreeCAD-Link-Stable-Linux-x86_64-py3.11-${VERSION_NR}.AppImage
-        OUT_FILE=FreeCAD-Link-Stable-GN-${VERSION_NR}.AppImage
-        
-        wget -q https://github.com/realthunder/FreeCAD/releases/download/${VERSION}/${IN_FILE}
+        if [[ ${VERSION} == weekly* ]]; then
+          IN_FILE=FreeCAD_${VERSION}-Linux-x86_64-py311.AppImage
+          OUT_FILE=FreeCAD-Orig-${VERSION}-GN-Linux-x86_64-py311.AppImage
+         else
+          IN_FILE=FreeCAD_${VERSION}-conda-Linux-x86_64-py311.AppImage
+          OUT_FILE=FreeCAD-Orig-${VERSION}-GN-conda-Linux-x86_64-py311.AppImage
+        fi
+
+        wget -q https://github.com/FreeCAD/FreeCAD/releases/download/${VERSION}/${IN_FILE}
         chmod a+x ${IN_FILE}
+
         ./${IN_FILE} --appimage-extract >/dev/null
         cp ${TOOLS_DIR}/AppRun.Link squashfs-root/AppRun
-        rm -f squashfs-root/usr/share/metainfo/org.freecadweb.FreeCAD.Link.appdata.xml
         ARCH=x86_64 ${APPIMAGETOOL} squashfs-root/ ${OUT_FILE} >/dev/null
         rm ${IN_FILE}
         rm -rf squashfs-root

@@ -1,9 +1,9 @@
-# FreeCAD.Link.AppImage
+# FreeCAD.AppImage
 ### Download
 Latest: [Download](/../../releases/latest)\
 All Releases: [Releases](/../../releases)
 ### Preface
-Whenever realthunder publish a new release of his version of FreeCAD (see: [here](https://github.com/realthunder/FreeCAD/releases)), this repository will build a new AppImage that Adjust path inside "${USER_CFG}" to current mount path
+Whenever FreeCAD publish a new release of FreeCAD (see: [here](https://github.com/FreeCAD/FreeCAD/releases), this repository will build a new AppImage that Adjust path inside "${USER_CFG}" to current mount path
 ### Using
 - Copy the files inside subfolder "ForPenDrive" to a Dir an Your PenDrive.
 - Copy an AppImage (from Releases) into the same Dir.
