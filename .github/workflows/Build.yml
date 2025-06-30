@@ -26,7 +26,7 @@ jobs:
         TOOLS_DIR=${THIS_REPO_DIR}/.github/tools
         APPIMAGETOOL="${TOOLS_DIR}/appimagetool-x86_64.AppImage"
 
-        for i in LINK_REPO THIS_REPO_DIR TOOLS_DIR APPIMAGETOOL; do
+        for i in ORIG_REPO THIS_REPO_DIR TOOLS_DIR APPIMAGETOOL; do
           eval "r=\"\$$i\""
           echo "$i=$r" >> $GITHUB_ENV
         done
