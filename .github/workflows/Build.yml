@@ -95,7 +95,7 @@ jobs:
         chmod a+x ${IN_FILE}
 
         ./${IN_FILE} --appimage-extract >/dev/null
-        cp ${TOOLS_DIR}/AppRun.Link squashfs-root/AppRun
+        cp ${TOOLS_DIR}/AppRun squashfs-root/AppRun
         ARCH=x86_64 ${APPIMAGETOOL} squashfs-root/ ${OUT_FILE} >/dev/null
         rm ${IN_FILE}
         rm -rf squashfs-root
