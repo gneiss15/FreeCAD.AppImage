@@ -46,10 +46,10 @@ jobs:
           WRITE_IT=0
           for i in $list; do
             #echo $i
-            if [ $WRITE_IT -eq 0 ] && [ "$i" = "1.0.1" ]; then
+            if [[ $WRITE_IT -eq 0 ]] && [[ "$i" = "1.0.1" ]]; then
               WRITE_IT=1
             fi
-            if [ $WRITE_IT -eq 1 ]; then
+            if [[ $WRITE_IT -eq 1 ]]; then
               echo $i >>$tmpfile
             fi
           done
@@ -62,7 +62,7 @@ jobs:
         VERSION=$(head -1 <<< "$(comm -23 Orig.Releases This.Releases)")
         rm -f "./Orig.Releases" "./This.Releases"
         
-        if [ -z "${VERSION}" ]; then
+        if [[ -z "${VERSION}" ]]; then
           echo "No new release found. Skipping rest of workflow."
           echo "skip=true" >> $GITHUB_OUTPUT
          else
@@ -103,7 +103,7 @@ jobs:
         # Upload to GitHub Releases
         list=$(gh release list -R "$GITHUB_REPOSITORY" --json tagName | jq -r 'map(select(true))[] | (.tagName)');
         for i in $list; do
-          if [ "$i" = "${VERSION}" ]; then
+          if [[ "$i" = "${VERSION}" ]]; then
             gh release delete $VERSION -y
           fi
         done
