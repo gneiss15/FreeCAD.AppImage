@@ -1,9 +1,10 @@
 name: Build FreeCAD AppImage
 on:
   workflow_dispatch:
-  push:
+  #push:
   schedule:
-    - cron: '0 1 * * *' # every Day at 01:00
+    - cron: '0 1 1/7 * *' # every first Day of Month at 01:10
+    #- cron: '0 1 * * *' # every Day at 01:00
 permissions:
   actions: write
   contents: write
